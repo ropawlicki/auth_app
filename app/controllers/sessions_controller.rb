@@ -10,6 +10,7 @@ class SessionsController < ApplicationController
       elsif @user.password == params[:password]
         flash[:success] = 'Signed in'
         @user.update(failed_signin_attempts: 0) if @user.failed_signin_attempts.positive?
+        cookies.encrypted.permanent[:user_id] = @user.id
         redirect_to index_path and return
       end
       @user.increment!(:failed_signin_attempts)
@@ -20,6 +21,7 @@ class SessionsController < ApplicationController
   end
 
   def destroy
+    cookies.delete :user_id
     flash[:success] = 'Signed out'
     redirect_to signin_path
   end
